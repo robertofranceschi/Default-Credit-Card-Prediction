@@ -2,7 +2,8 @@
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/code.ipynb)
 
-Classification of default of credit card clients from the UCI dataset using machine learning techniques
+Classification of default of credit card clients from the UCI dataset using machine learning techniques.
+Analysis of the dataset UCI Default of Credit Card Clients Dataset, that contains information on default payments, demographic factors, credit data, history of payment, and bill statements of credit card clients in Taiwan from April 2005 to September 2005.
 
 
 **Mathematics in Machine Learning** | Politecnico di Torino  
