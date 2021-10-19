@@ -2,64 +2,53 @@
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/code.ipynb)
 
-Classification of default of credit card clients from the UCI dataset using machine learning techniques.
-Analysis of the dataset UCI Default of Credit Card Clients Dataset, that contains information on default payments, demographic factors, credit data, history of payment, and bill statements of credit card clients in Taiwan from April 2005 to September 2005.
+Classification of default of credit card clients from the UCI dataset using machine learning techniques
 
+---
+## Contents:
 
-**Mathematics in Machine Learning** | Politecnico di Torino  
-  
-Prof. Francesco Vaccarino  
-Prof. Mauro Gasparini  
-  
-Student: Roberto Franceschi (S276243)
-
-* * *
-
-### Contents:(#Contents:)
-
-1.  [Introduction](#intro)
-2.  [Exploratory Data Analysis](#eda)
-    * [Feature Analysis](#feat)
-    * [Data cleaning](#data_cleaning)
-    * [Correlation](#corr)
-    * [Box plot](#boxplot)
-3.  [Data Preprocessing](#data_preproc)
-    * [One-hot encoding for categorical variables](#one_hot)
-    * [Feature Scaling](#feat_scaling)
-    * [Train-test split](#train-test)
-    * [Dimensionality Reduction](#dim_red)
-        * [Feature selection](#feat_sel)
-        * [Principal Component Analysis](#pca)
-    * [Oversampling and Undersampling](#over_under)
-4.  [Classification algorithms](#classification)
-    * [Evaluation Methods](#eval_methods)
-    * [Evaluation Metrics](#eval_metrics)
+1.  [Introduction](#introduction)
+2.  [Exploratory Data Analysis](#exploratory-data-analysis)
+    * [Feature Analysis](#feature-analysis)
+    * [Data cleaning](#data-cleaning)
+    * [Correlation](#correlation)
+    * [Box plot](#box-plot)
+3.  [Data Preprocessing](#data-preprocessing)
+    * [One-hot encoding for categorical variables](#one-hot-encoding-for-categorical-variables)
+    * [Feature Scaling](#feature-scaling)
+    * [Train-test split](#train-test-split)
+    * [Dimensionality Reduction](#dimensionality-reduction)
+        * [Feature selection](#feature-selection)
+        * [Principal Component Analysis](#principal-component-analysis)
+    * [Oversampling and Undersampling](#oversampling-and-undersampling)
+4.  [Classification algorithms](#classification-algorithms)
+    * [Evaluation Methods](#evaluation-methods)
+    * [Evaluation Metrics](#evaluation-metrics)
     * [Models](#models)
-        * [Logistic Regression](#log_reg)
-        * [Random Forests](#random_forest)
+        * [Logistic Regression](#logistic-regression)
+        * [Random Forests](#random-forest)
         * [Support Vector Machines](#svm)
 5.  [Results](#results)
 6.  [Conclusions](#conclusions)
 
 * * *
 
-1\. Introduction(#1.-Introduction)
--------------------------------------
+## Introduction
 
 The aim of this study is to exploit some supervised machine learning algorithms to identify the key drivers that determine the likelihood of credit card default, underlining the mathematical aspects behind the methods used. Credit card default happens when you have become severely delinquent on your credit card payments. In order to increase market share, card-issuing banks in Taiwan over-issued cash and credit cards to unqualified applicants. At the same time, most cardholders, irrespective of their repayment ability, the overused credit card for consumption and accumulated heavy credit and debts
 
 The goal is to build an automated model for both identifying the key factors, and predicting a credit card default based on the information about the client and historical transactions. The general concepts of the supervised machine learning paradigm are later reported, together with a detailed explanation of all techniques and algorithms used to build the models. In particular, Logistic Regression, Random Forest and Support Vector Machines algorithms have been applied.
 
-### 1.1 Environment(#1.1-Environment)
+### Environment
 
 The analysis has been fully conducted with Python language, exploiting several machine learning and statistical frameworks available such as `scikit-learn`, `numpy`, `pandas`, `imblearn` together with other data visualization libraries (`matplotlib` and `seaborn`).
 
 Some code snippets have been reported for a better understanding of each step. Moreover, the full code implementation of this analysis is publicly available at [github.com/robertofranceschi/default-credit-card-prediction](https://github.com/robertofranceschi/default-credit-card-prediction).
 
-2\. Exploratory Data Analysis (EDA)(#2.-Exploratory-Data-Analysis-(EDA))
----------------------------------------------------------------------------
+-------------------------------------
+## Exploratory Data Analysis
 
-### 2.1 Feature Analysis[¶](#2.1-Feature-Analysis)
+### Feature Analysis
 
 The dataset used in this study is the _Default of credit card clients_ from the UCI machine learning repository, available at the following [link](https://archive.ics.uci.edu/ml/datasets/default+of+credit+card+clients).  
 It consists of **30000 observations** that represent distinct credit card clients. Each observation has **24 attributes** that contain information on default payments, demographic factors, credit data, history of payment, and bill statements of credit card clients in Taiwan from April 2005 to September 2005.
@@ -106,10 +95,12 @@ The last variable is the one to be predicted:
 
 The main aim of the data is to discriminate clients that are predicted to credit card default the next month, according to the `default.payment.next.month` column which is set to “0” for non-defaulters and “1” for defaulters. Thus, it is a **_binary classification problem_** on a relatively _unbalanced dataset_, as shown in the following figure.
 
-![](https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/class-distribution.png?raw=true)  
-
-_Class distribution_
-
+<p align = "center">
+<img height="300" src="https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/class-distribution.png?raw=true">
+</p>
+<p align = "center">
+Class distribution
+</p>
   
 
 As can be seen, a number of 6.636 out of 30.000 (or 22.1%) of clients will default next month (i.e. has category 1).
@@ -117,15 +108,11 @@ As can be seen, a number of 6.636 out of 30.000 (or 22.1%) of clients will defau
 In order to get a first look at how data is presented, some observations of the dataset are shown in the table below. No missing feature is recorded for any of the 30.000 samples.  
 The data appears already encoded and cleaned. However, by better inspecting some samples and statistics there are some observations to point out.
 
-In \[3\]:
-
-\# read input
+```python
+# read input
 data = pd.read_csv(INPUT_PATH)
 data.head()
-
-Out\[3\]:
-
-.dataframe tbody tr th:only-of-type { vertical-align: middle; } .dataframe tbody tr th { vertical-align: top; } .dataframe thead th { text-align: right; }
+``` 
 
 |     | ID  | LIMIT_BAL | SEX | EDUCATION | MARRIAGE | AGE | PAY_0 | PAY_2 | PAY_3 | PAY_4 | ... | BILL_AMT4 | BILL_AMT5 | BILL_AMT6 | PAY_AMT1 | PAY_AMT2 | PAY_AMT3 | PAY_AMT4 | PAY_AMT5 | PAY_AMT6 | default.payment.next.month |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -136,15 +123,11 @@ Out\[3\]:
 | 4   | 5   | 50000.0 | 1   | 2   | 1   | 57  | -1  | 0   | -1  | 0   | ... | 20940.0 | 19146.0 | 19131.0 | 2000.0 | 36681.0 | 10000.0 | 9000.0 | 689.0 | 679.0 | 0   |
 
 5 rows × 25 columns
-
-In \[4\]:
-
-\# Summary Statistics
+```python
+# Summary Statistics
 data.describe()
+```
 
-Out\[4\]:
-
-.dataframe tbody tr th:only-of-type { vertical-align: middle; } .dataframe tbody tr th { vertical-align: top; } .dataframe thead th { text-align: right; }
 
 |     | ID  | LIMIT_BAL | SEX | EDUCATION | MARRIAGE | AGE | PAY_0 | PAY_2 | PAY_3 | PAY_4 | ... | BILL_AMT4 | BILL_AMT5 | BILL_AMT6 | PAY_AMT1 | PAY_AMT2 | PAY_AMT3 | PAY_AMT4 | PAY_AMT5 | PAY_AMT6 | default.payment.next.month |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -177,41 +160,38 @@ In our case the first method is applied to the categorical variables, by safely 
 
 while the second approach is applied to the `PAY_n` features, correcting them by adding 1 to each attribute and grouping together the resulting values of '0' and '-1' (since 0 does not correspond to any value previously described).
 
-In \[6\]:
 
-data\['MARRIAGE'\].value_counts()
+```python
+data['MARRIAGE'].value_counts()
+```
 
-Out\[6\]:
+    Out [6]:
 
-2    15964
-1    13659
-3      323
-0       54
-Name: MARRIAGE, dtype: int64
+    2    15964
+    1    13659
+    3      323
+    0       54
+    Name: MARRIAGE, dtype: int64
 
-In \[7\]:
+```python
+data['EDUCATION'].value_counts()
+```
+    Out [7]:
 
-data\['EDUCATION'\].value_counts()
+    2    14030
+    1    10585
+    3     4917
+    5      280
+    4      123
+    6       51
+    0       14
+    Name: EDUCATION, dtype: int64
 
-Out\[7\]:
 
-2    14030
-1    10585
-3     4917
-5      280
-4      123
-6       51
-0       14
-Name: EDUCATION, dtype: int64
-
-In \[12\]:
-
-\# Payment delay description
-data\[\['PAY_1', 'PAY_2', 'PAY_3', 'PAY_4', 'PAY_5', 'PAY_6'\]\].describe()
-
-Out\[12\]:
-
-.dataframe tbody tr th:only-of-type { vertical-align: middle; } .dataframe tbody tr th { vertical-align: top; } .dataframe thead th { text-align: right; }
+```python
+# Payment delay description
+data[['PAY_1', 'PAY_2', 'PAY_3', 'PAY_4', 'PAY_5', 'PAY_6']].describe()
+```
 
 |     | PAY_1 | PAY_2 | PAY_3 | PAY_4 | PAY_5 | PAY_6 |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -224,39 +204,43 @@ Out\[12\]:
 | 75% | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
 | max | 8.00 | 8.00 | 8.00 | 8.00 | 8.00 | 8.00 |
 
-In \[20\]:
-
-\# Amount of given credit in NT dollars
+``` python
+# Amount of given credit in NT dollars
 data.LIMIT_BAL.describe()
+```
 
-Out\[20\]:
+    Out[20]:
 
-count      29601.00
-mean      167550.54
-std       129944.02
-min        10000.00
-25%        50000.00
-50%       140000.00
-75%       240000.00
-max      1000000.00
-Name: LIMIT_BAL, dtype: float64
+    count      29601.00
+    mean      167550.54
+    std       129944.02
+    min        10000.00
+    25%        50000.00
+    50%       140000.00
+    75%       240000.00
+    max      1000000.00
+    Name: LIMIT_BAL, dtype: float64
 
 The very high value of standard deviation has been further investigated. As can be seen, most of defaults are for credit limits 0-100,000 (and density for this interval is larger for defaults than for non-defaults).
 
-![](https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/LIMIT_BAL_distribution.png?raw=true)  
 
-_Density plot of amount of given credit (LIMIT_BAL)_
+<p align = "center">
+<img height="300" src="https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/LIMIT_BAL_distribution.png?raw=true">
+</p>
+<p align = "center">
+Density plot of amount of given credit (LIMIT_BAL)
+</p>
 
-### 2.3 Correlation between features[¶](#2.3-Correlation-between-features)
+### Correlation between features
 
 Another relevant point which could affect the classification performances is the correlation among features: the presence of strongly correlated features may lead to a decline in the performances of some classification algorithms which assume that the predictors are all independent. Another benefit from spotting correlation among features is that the same information may be encoded with less attributes, and this could lead to simpler final models. Indeed, some methods suffer from high dimensional datasets (especially distance based ones with a few number of samples), so reducing the dimensions of the feature vectors can make it more trustable and stable, if the discarded dimensions don’t affect significantly the total original information.
 
 The _Pearson’s correlation coefficient_ is a statistic that measures the linear correlation between a pair of random variables. In particular, given the random vector $(X, Y)$ :
 
-\\begin{equation} \\rho _{X,Y} :=\ \\frac{Cov( X,\ Y)}{\\sigma _{X} \\sigma _{Y}} \ \\in \ \[ -1,\ 1\] \ \\subset \ \\mathbb{R} \\end{equation}
+$ \rho_{X,Y} := \frac{Cov( X,\ Y)}{\sigma_{X} \sigma_{Y}}\in [ -1, 1] \subset \ \mathbb{R} $
 
-where $Cov( X,\ Y)$ is the Covariance and $\\sigma _{X}$ and $\\sigma _{Y}$ are respectively the standard deviations of $X$ and $Y$.  
-$\\rho _{X,Y}$ has a value bounded between $-1$ and $+1$.
+where $Cov( X,\ Y)$ is the Covariance and $\sigma _{X}$ and $\sigma _{Y}$ are respectively the standard deviations of $X$ and $Y$.  
+$\rho_{X,Y}$ has a value bounded between $-1$ and $+1$.
 
 The higher in absolute value, the stronger the linear correlation is, meaning that on average for each large (w.r.t. the mean of $X$) value observed, a corresponding large value (w.r.t. the mean of $Y$) is also observed.  
 Note that the Pearson’s correlation coefficient is only able to capture linear trends, hence it might lead to a value of 0 for strongly non-linearly correlated variables (e.g. quadratic trend).
@@ -264,39 +248,47 @@ Note that the Pearson’s correlation coefficient is only able to capture linear
 In practice, the underlying probability distribution is not known but only a sample of realizations of the random vector $(X,Y)$ is available, so the statistic is computed by inferring the unbiased covariance and standard deviations from the dataset for each pair of attributes.
 
 The following representation shows the correlation matrix between features: since the way the matrix is constructed make it symmetric and because of the large number of features, only the heatmap of the lower diagonal matrix (the diagonal itself is excluded) is reported for a better visualization.  
-![](https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/correlation%20matrix.png?raw=true)  
 
-_Correlation matrix by means of the Pearson’s coefficient for all feature pairs._
-
-  
+<p align = "center">
+<img height="500" src="https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/correlation%20matrix.png?raw=true">
+</p>
+<p align = "center">
+Correlation matrix by means of the Pearson’s coefficient for all feature pairs.
+</p>
 
 As shown in the correlation matrix above, some features show high correlations with each other. In particular, there exist an high positive correlation among the `BILL_AMTn` features, for example:
 
-* BILL\_AMT1 and BILL\_AMT2 have $\\rho = 0.95$
-* BILL\_AMT2 and BILL\_AMT3 have $\\rho = 0.93$
-* BILL\_AMT4 and BILL\_AMT5 have $\\rho = 0.94$
+* BILL\_AMT1 and BILL\_AMT2 have $\rho = 0.95$
+* BILL\_AMT2 and BILL\_AMT3 have $\rho = 0.93$
+* BILL\_AMT4 and BILL\_AMT5 have $\rho = 0.94$
 
 To give a further proof of the linear dipendence of these variables, their interactions plots are shown:  
-![](https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/scatter-correlated_features.png?raw=true)  
-
-_Distribution of correlated features (scatter plot)_
+<p align = "center">
+<img height="300" src="https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/scatter-correlated_features.png?raw=true">
+</p>
+<p align = "center">
+Distribution of correlated features (scatter plot)
+</p>
 
 The charts confirm what expected, the features in the same graph shows a linear trend as the Pearson coefficient suggested, indicating they encode pretty similar information.  
 
 For completness, also charts of non-strongly correlated features are reported. In particular:
 
-* AGE and LIMIT_BAL $\\rho = 0.14$
-* AGE and BILL_AMT1 $\\rho = 0.055$
-* PAY\_AMT1 and BILL\_AMT1 $\\rho = 0.099$
+* AGE and LIMIT_BAL $\rho = 0.14$
+* AGE and BILL_AMT1 $\rho = 0.055$
+* PAY\_AMT1 and BILL\_AMT1 $\rho = 0.099$
 
 The following charts are obtained:  
-![](https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/scatter-uncorrelated.png?raw=true)  
+<p align = "center">
+<img height="300" src="https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/scatter-uncorrelated.png?raw=true">
+</p>
+<p align = "center">
+Distribution of uncorrelated features
+</p>
 
-_Distribution of uncorrelated features_
+In order to remove correlated features some dimensionality reduction techinques will be performed during the Data Preprocessing phase.
 
-In order to remove correlated features some dimensionality reduction techinques will be performed during the Data Preprocessing phase (point [3.](#data_preproc)).
-
-### 2.4 Boxplot[¶](#2.4-Boxplot)
+### Boxplot
 
 Finally, the boxplots for each of the numerical features are plotted in order to have a further look at the distribution and to eventually spot outliers (i.e. “bad” data that either has been misscomputed or is strongly exceptional wrt expected range).
 
@@ -308,70 +300,65 @@ A boxplot represents a 5-number summary of data:
 * minimum: the lowest data point excluding any outliers;
 * maximum: the largest data point excluding any outliers.
 
-In the boxplot we define the Interquartile range (IQR) as is the distance between the upper and lower quartiles:
+In the boxplot we define the Interquartile range (IQR) as is the distance between the upper and lower quartiles: $IQR = Q_3 - Q_1 = q(0.75) - q(0.25) $
 
-\\begin{equation} IQR = Q\_3 - Q\_1 = q(0.75) - q(0.25) \\end{equation}
+<p align = "center">
+<img height="300" src="https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/boxplot_theory.png?raw=true">
+</p>
+<p align = "center">
+Boxplot description
+</p>
 
-  
-![](https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/boxplot_theory.png?raw=true)
-
-_Boxplot description_
-
-  
-
-Furthermore, through them it is possible to detect outliers presence (i.e. the single points), with the following rule: every sample located beyond $Q\_1 − 1.5IQR$ and $Q\_3 + 1.5IQR$ is considered an outlier.
+Furthermore, through them it is possible to detect outliers presence (i.e. the single points), with the following rule: every sample located beyond $Q_1 − 1.5\cdot IQR$ and $Q_3 + 1.5\cdot IQR$ is considered an outlier.
 
 _Note that for the purpose a normalization was applied on all the attributes to make them have the same scale, otherwise it would have been impossible to compare them._
 
-### Min-Max scaling for numerical variables[¶](#Min-Max-scaling-for-numerical-variables)
+### Min-Max scaling for numerical variables
 
 As mentioned above, input variables may have different units so different scales and magnitude; for this reason before drawing a boxplot, a `MinMaxScaler()` is applied in order to scale the features between a range $(0, 1)$. The basic idea behind this rescaling technique is that for every feature, the minimum value of that feature gets transformed into a 0, the maximum value gets transformed into a 1, and every other value gets transformed into a decimal between 0 and 1.  
 The transformation is given by the following formula:
 
-\\begin{equation} X_{scaled} = \\frac{(X - X_{min})}{(X_{max} - X_{min})} \\end{equation}
+$ X_{scaled} = \frac{(X - X_{min})}{(X_{max} - X_{min})} $
 
 where $X_{min}$ is the minimum value on the column and $X_{max}$ is the maximum value on the column.
 
 This transformation is applied on **numerical features** only as the categorical variables has been already transformed into one-hot vectors, that rescale the categorical variable in the range $(0,1)$.
 
-### Standardization[¶](#Standardization)
+### Standardization
 
 Another possible scaling technique is referred to as **standardization**, which transforms each value $x$ of feature $X$ as follows, independently for each column:
 
-\\begin{equation} x^{\\prime} =\\frac{x-\\mu _{X}}{\\sigma _{X}} \\end{equation}
+$ x^{\prime} =\frac{x-\mu_{X}}{\sigma_{X}} $
 
-where $\\mu_{X}$ is the sample mean and $\\sigma_{X}$ is the sample standard deviation of feature $X$. This way, we force each attribute to have a new empirical mean value of 0 and variance 1.
+where $\mu_{X}$ is the sample mean and $\\sigma_{X}$ is the sample standard deviation of feature $X$. This way, we force each attribute to have a new empirical mean value of 0 and variance 1.
 
 _Note that the statistics (e.g. mean and standard deviation for the Standard Scaler) are computed on the training set only, then both datasets are transformed according to them. This is very important as it avoids leaking any information from the test set into the training process, which would be formally incorrect by definition._
-
+```python 
 from sklearn.preprocessing import StandardScaler
 scaler = StandardScaler() \# or MinMaxScaler()
 scaler.fit(X_train)
 X_train = scaler.transform(X_train)
 X_test = scaler.transform(X_test)
-
-![](https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/boxplots.png?raw=true)  
-
-_Boxplots of numerical features scaled according min-max normalization (left) and standardization (right)_
-
-  
+```
+<p align = "center">
+<img height="300" src="https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/boxplots.png?raw=true">
+</p>
+<p align = "center">
+Boxplots of numerical features scaled according min-max normalization (left) and standardization (right)
+</p>
 
 According to the method previously described from the boxplot we can identifty many outliers. It is possible to change the multiplicative coefficient to decide the threshold to overcome to be considered an outlier, but still dubling the coefficent the possible outliers are more than 4000.
 
 Due to the lack of domain knowledge and the very high number of identifiable outliers, no samples have been discarded as outliers.
 
-3\. Data Preprocessing[¶](#3.-Data-Preprocessing)
 -------------------------------------------------
+## Data Preprocessing
 
-### 3.1 One-hot encoding for categorical variables[¶](#3.1-One-hot-encoding-for-categorical-variables)
+### One-hot encoding for categorical variables
 
 An integer encoding may impose some ordinal relationship between categorical variables that does not exist, for this reason a **one-hot encoding** is performed. Categorical variable such as `SEX`, `MARRIAGE` and `EDUCATION` are turned into one-hot variables in order to remove any orders that in this case have no meaning.
 
 A one hot encoding is a representation of categorical variables as binary vectors. This first requires that the categorical values be mapped to integer values. Then, each integer value is represented as a binary vector that is all zero values except the index of the integer, which is marked with a 1.
-
-Out\[27\]:
-
-.dataframe tbody tr th:only-of-type { vertical-align: middle; } .dataframe tbody tr th { vertical-align: top; } .dataframe thead th { text-align: right; }
 
 |     | SEX_1 | SEX_2 | EDUCATION_1 | EDUCATION_2 | EDUCATION_3 | EDUCATION_4 | MARRIAGE_1 | MARRIAGE_2 | MARRIAGE_3 | LIMIT_BAL | ... | BILL_AMT4 | BILL_AMT5 | BILL_AMT6 | PAY_AMT1 | PAY_AMT2 | PAY_AMT3 | PAY_AMT4 | PAY_AMT5 | PAY_AMT6 | Default |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -383,11 +370,11 @@ Out\[27\]:
 
 5 rows × 30 columns
 
-### 3.2 Feature Scaling(#3.2-Feature-Scaling)
+### Feature Scaling
 
 As previously explained, a `MinMaxScaler()` has been already applied to all the numerical features.
 
-### 3.3 Train-test split(#3.3-Train-test-split)
+### Train-test split
 
 The dataset is divided in training set and test set, with the proportion 3:1. Given the imbalance fashion in the original dataset a **stratified sampling** strategy has been applied during the split, so that the proportion of defaulters/non-defaulters clients in each of the final sets would approximately be the same as the initial one. This approach is desirable every time we have a highly _unbalanced dataset_ as in our case.  
 The final split obtained is distributed as follows:
@@ -398,10 +385,11 @@ The final split obtained is distributed as follows:
 | **Test set** | 5750 | 1651 | 7401 |
 
 _Note that the split has been randomly generated but kept the same for all the following methods, in order to to make evaluations statistically meaningful and provide consistent results among the different classifiers._
-
+```python
 random_state = 42
+```
 
-### 3.4 Dimensionality reduction[](#3.4-Dimensionality-reduction)
+### Dimensionality reduction
 
 As already mentioned above, generally speaking it is not always a good idea to propagate in the algorithms all the samples attributes. The main reasons for which the dimensionality reduction is required are the following:
 
@@ -411,14 +399,14 @@ As already mentioned above, generally speaking it is not always a good idea to p
 
 Moreover different machine learning algorithms suffer from the **_curse of dimensionality_** problem: if there are more features than observations the risk of massively overfitting the model becomes really high. Then, too many dimensions causes every observation in the dataset to appear equidistant from all the other, and this is effectively a problem when used distance-based algorithms (such as K-Nearest Neighbors), because if the distances are all approximately equal, then the observation appear equally alike (as well as equally different), making the algorithm perfomances meaningless.
 
-### Feature Selection[](#Feature-Selection)
+### Feature Selection
 
 On top of feature transformation, the data preprocessing phase often includes a feature selection step, where the attributes from the given dataset are carefully analysed and finally selected to feed the machine learning algorithm.  
-As previously seen in the correlation matrix and with scatter plots, some features in this dataset are strongly linearly correlated, so it is not meaningful to keep all of them because they may contain redundant information. In this way, features with a Pearson coefficient $\\rho \\geqslant 0.92$ with other predictors should be discarded.
+As previously seen in the correlation matrix and with scatter plots, some features in this dataset are strongly linearly correlated, so it is not meaningful to keep all of them because they may contain redundant information. In this way, features with a Pearson coefficient $\rho \geqslant 0.92$ with other predictors should be discarded.
 
 In particular, at this step the following features are removed: `BILL_AMT2`, `BILL_AMT3`, `BILL_AMT4`, `BILL_AMT5`, `BILL_AMT6`.
 
-### Principal Component Analysis (PCA)[¶](#Principal-Component-Analysis-(PCA))
+### Principal Component Analysis
 
 Another way to obtain a lower dimensional dataset when dealing with multicollinearity among features, is by applying a Principal Component Analysis (PCA) to our data.
 
@@ -426,25 +414,27 @@ PCA is an **unsupervised learning** technique that performs a linear transformat
 
 The intuition behind this approach lies in the fact that if the direction of maximum variance in the original space is not directly captured by the features in the dataset, then that direction might be used to construct a new feature that has a larger variance, hence probably encoding more information. Therefore, the following minimization problem is performed for finding the direction of maximum variance:  
   
-\\begin{equation} X\\in \\mathbb{R}^{n\\times d} ,\ dataset\ centered\ in\ zero\\\ \\Sigma :=\\frac{X^{T} X}{n-1} \ ,\ sample\ covariance\ matrix\\\ \\\ find\ \ \\overrightarrow{z_{1}} :=a_{1}\\overrightarrow{e_{1}} \ +...+a_{d}\\overrightarrow{e_{d}}\\\ \\\ \\\ \\\ s.t.:\\\ \\\ \ \\overrightarrow{z_{1}} =\\underset{\\vec{z}_{1}}{argmax} \ \ \\vec{z}_{1}^{T} \ \\Sigma \ \ \\vec{z}_{1} ,\ subject\ to:\ \\Vert \\vec{z}_{1}\\Vert =1 \\end{equation}  
+$ X\in \mathbb{R}^{n\times d} , dataset\ centered\ in\ zero\\\ \Sigma :=\frac{X^{T} X}{n-1},\ sample\ covariance\ matrix\\ find\ \ \overrightarrow{z_{1}} :=a_{1}\overrightarrow{e_{1}} +...+a_{d}\overrightarrow{e_{d}} \\ \\\ \\ s.t.: \\\ \\ \overrightarrow{z_{1}} =\underset{\vec{z}_{1}}{argmax} \ \ \vec{z}_{1}^{T} \ \Sigma \ \ \vec{z}_{1} ,\ subject\ to:\ \Vert \vec{z}_{1}\Vert =1 $ 
+
 Recursively, all other dimensions are then computed in the same way, additionally forcing them to be orthogonal to the previous dimensions found. The new features $z_{i}$ are denoted as **principal components** (PCs).
 
-The above optimization problem can be easily proved to be equivalent to computing the eigendecomposition of $\\Sigma$ and selecting its eigenvectors as the principal components, which is the way PCA is executed in practice. In particular, being $\\Sigma$ a symmetric positive semidefinite matrix, it is always possible to diagonalize it by means of an orthogonal matrix $P$ (eigenvectors of $\\Sigma$), and obtain the resulting similar matrix $\\Lambda$:  
+The above optimization problem can be easily proved to be equivalent to computing the eigendecomposition of $\Sigma$ and selecting its eigenvectors as the principal components, which is the way PCA is executed in practice. In particular, being $\Sigma$ a symmetric positive semidefinite matrix, it is always possible to diagonalize it by means of an orthogonal matrix $P$ (eigenvectors of $\Sigma$), and obtain the resulting similar matrix $\Lambda$:  
   
-\\begin{equation} \\Lambda =\ \\begin{pmatrix} \\lambda _{1} & 0 & \\cdots & 0\\\ 0 & \\lambda _{2} & \\ddots & \\vdots \\\ \\vdots & \\ddots & \\ddots & 0\\\ 0 & \\cdots & 0 & \\lambda _{d} \\end{pmatrix} \ ,\ \\lambda _{1} \\geqslant \\lambda _{2} \\geqslant ...\\geqslant \\lambda _{d} \\geqslant 0,\ \\lambda _{i} \\in \\mathbb{R}^{+} \\end{equation}
+$ \Lambda =\ \begin{pmatrix} \lambda_{1} & 0 & \cdots & 0\\\ 0 & \lambda _{2} & \ddots & \vdots \\\ \vdots & \ddots & \ddots & 0\\\ 0 & \cdots & 0 & \lambda_{d} \end{pmatrix} \ ,\ \lambda_{1} \geqslant \lambda_{2} \geqslant ...\geqslant \lambda_{d} \geqslant 0,\ \lambda_{i} \in \mathbb{R}^{+} $
 
-where $\\lambda_{i}$ are the eigenvalues of $\\Sigma$, or equivalently the variances of the new features found. Note that, since $\\Sigma$ and $\\Lambda$ are similar matrices, they have the same trace, meaning that the initial total variance among the features of the dataset is not changing but it is just getting redistributed on new axes (which is expected as all we are doing is just a rigid rotation of the space). In particular, we can compute the variance explained by each new principal component with respect to the total variance of the dataset.
+where $\lambda_{i}$ are the eigenvalues of $\Sigma$, or equivalently the variances of the new features found. Note that, since $\Sigma$ and $\Lambda$ are similar matrices, they have the same trace, meaning that the initial total variance among the features of the dataset is not changing but it is just getting redistributed on new axes (which is expected as all we are doing is just a rigid rotation of the space). In particular, we can compute the variance explained by each new principal component with respect to the total variance of the dataset.
 
-Finally note that $\\Lambda$ is now the covariance matrix in the new basis found, and since it’s diagonal all new features result to be linearly uncorrelated. We can then select only a subset of the first principal components in order to reduce the initial dimensionality of the dataset with minimal information loss.
+Finally note that $\Lambda$ is now the covariance matrix in the new basis found, and since it’s diagonal all new features result to be linearly uncorrelated. We can then select only a subset of the first principal components in order to reduce the initial dimensionality of the dataset with minimal information loss.
 
 In this study, PCA has been performed on the Credit card dataset to deal with the multicollinearity problem and reduce the number of dimensions. The following figure shows how the variance has been redistributed on the new features extracted.
 
-![](https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/pca.png?raw=true)  
-
-_Explained variance ratio of each principle component, together with the  
-cumulative variance explained as more dimensions are considered._
-
-  
+<p align = "center">
+<img height="300" src="https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/pca.png?raw=true">
+</p>
+<p align = "center">
+Explained variance ratio of each principle component, together with the  
+cumulative variance explained as more dimensions are considered.
+</p>
 
 The graph above is relative to the **proportion of explained variance**: the green line represents the proportion of variance explained by each principal component. While the orange line instead is the cumulative amount of proportion of variance explained (i.e. the sum of the single variance explained by the principal components on the left).
 
@@ -460,15 +450,12 @@ This graph is useful to take decision regarding the number of components to keep
 For example, the first 12 PCs are able to capture almost the whole variance (99%) of the data points and for this reason we decided to keep these number.
 
 _Note that PCA is applied based only on the training data in order to avoid any leaking the information of test data._
-
+``` python
 from sklearn.decomposition import PCA
 
 pca = PCA(n_components=len(X_train.columns))
-pca.fit(X_train) \# not on the whole dataset
-
-Out\[40\]:
-
-.dataframe tbody tr th:only-of-type { vertical-align: middle; } .dataframe tbody tr th { vertical-align: top; } .dataframe thead th { text-align: right; }
+pca.fit(X_train) # not on the whole dataset
+```
 
 |     | PC1 | PC2 | PC3 | PC4 | PC5 | PC6 | PC7 | PC8 | PC9 | PC10 | PC11 | PC12 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -478,7 +465,7 @@ Out\[40\]:
 | 3   | -0.52 | -0.38 | 0.93 | -0.31 | 0.71 | -0.10 | 0.09 | -7.04e-02 | 2.04e-02 | -0.09 | -0.05 | 3.32e-03 |
 | 4   | -1.07 | -0.25 | -0.30 | -0.23 | 0.24 | 0.39 | -0.03 | -9.61e-03 | 3.43e-02 | -0.20 | 0.11 | -1.48e-04 |
 
-### 3.5 Oversampling and undersampling[¶](#3.5-Oversampling-and-undersampling)
+### Oversampling and undersampling
 
 When dealing with significantly **unbalanced dataset** in the target label, it becomes harder for most machine learning algorithms to efficiently learn all classes. The training process might be indeed biased towards a certain class if the dataset distribution is poorly balanced.
 
@@ -492,17 +479,19 @@ In the specific case of the credit card clients, only about 22.1% of the data ar
 While the obvious and most desirable solution would be to collect more real data, _oversampling_ and _undersampling_ are techniques that may still come in handy in these situations.  
 For both techniques there is a naïve approach that is the **_random oversampling (undersampling)_** where training data is incremented (decremented) with multiple copies of the samples, until the same proportion is obtained on the minority (majority) classes.
 
-### Oversampling: Synthetic Minority Over-sampling Technique (SMOTE)[¶](#Oversampling:-Synthetic-Minority-Over-sampling-Technique-(SMOTE))
+### Oversampling: Synthetic Minority Over-sampling Technique (SMOTE)
 
 With SMOTE algorithm the minority class is augmented artificially, by constructing new synthetic samples randomly positioned in between one point and its k-neighbors. In other words, given a limited set of data points that belong to the class that we wish to augment, we trace high-dimensional lines connecting the data points and we draw new samples from such lines.  
-  
-![](https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/oversampling-smote.png?raw=true)  
 
-_Example of SMOTE application on a small dataset_
-
+<p align = "center">
+<img src="https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/oversampling-smote.png?raw=true">
+</p>
+<p align = "center">
+Example of SMOTE application on a small dataset
+</p>
   
 Finally, note that a synthetic sample should never be used as a test sample, since it has technically never appeared in the real world and hence not formally belonging to the target distribution. Also, the stratified test set is believed to be the correct representation of the real world, and augmenting a part of it would lead to a misleading evaluation.
-
+``` python
 from imblearn.over_sampling import SMOTE
 
 clf = Classifier(**best_config)
@@ -514,21 +503,24 @@ clf.fit(X_train, y_train)
 y_pred = clf.predict(X_test)
 
 accuracy = accuracy_score(y_test, y_pred)
+```
 
-### Undersampling: Cluster Centroids[¶](#Undersampling:-Cluster-Centroids)
+### Undersampling: Cluster Centroids
 
 Cluster Centroids make use of K-means algorithm to perform undersampling. After finding the cluster centroids on the majority class points, the algorithm selects the instances belonging to the cluster (labelled with the majority class), which are furthest from the cluster centroid in feature space. These data points are considered as the most unimportant instance. On the contrary, the instance belonging to the majority class, that is nearest to the cluster centroid in feature space, is considered to be the most important instance. In this way, instances belonging to the majority class are removed on the basis of their importance.  
-  
-![](https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/undersampling-cluster_centroids.png?raw=true)  
 
-_Example of Cluster Centroids application on a trivial dataset_
+<p align = "center">
+<img height="300" src="https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/undersampling-cluster_centroids.png?raw=true">
+</p>
+<p align = "center">
+Example of Cluster Centroids application on a trivial dataset
+</p>
 
-  
 In particular, given two class which has respectively $N$ and $M$ data points with $N<M$, the algoritm trains a K-Means on points labelled with the majority class label, with $k = N$, the cardinality of the set of minority data points.  
 Then for each cluster, it replace the data points of the majority class with a new point whose coordinates correspond to the cluster centroid's coordinates. So we undersample majority class by forming clusters and replacing it with cluster centroids.
 
-4\. Classification algorithms[¶](#4.-Classification-algorithms)
 ---------------------------------------------------------------
+## Classification algorithms
 
 In this section a description of the algorithms used is presented. For each of them, different hyperparameters are tuned in order to find the ones performing best, and, once found, the model trained with them is used to predict class labels on test data combining different data preprocessing techniques presented above in order to spot some performances differences. The best configuration is selected by comparing the different metrics, principally based on the _f1-score_ because accuracy on unbalance dataset may return an high values even if the minority class is not correcly classified.
 
@@ -544,7 +536,7 @@ The algorithms considered are:
 * Random forest (and Decision Trees)
 * SVM (both Linear and RBF)
 
-### 4.1 Evaluation methods[¶](#4.1-Evaluation-methods)
+### Evaluation methods
 
 Even though learning theory guarantees to reach a probably approximately correct model, in practice it is often needed to perform an actual evaluation of the model to check how well it’s performing. This is generally done by splitting the original dataset into two parts, a training set and a test set, so that the model can be trained on the training samples only and be evaluated on previously unseen data. This technique is referred to as **_Holdout_**.
 
@@ -557,20 +549,18 @@ With the cross-validation technique we aim to verify if the model is able predic
 
 This operation is repeated $k$ times in order to reduce the variability, and at every round the validation subset changes. At the end, the $k$ estimates of model's predictive performance are averaged.
 
-  
-  
-![](https://upload.wikimedia.org/wikipedia/commons/c/c7/LOOCV.gif)  
-  
-
-_Example of Cross Validation (k=8) where the red and blue square is used respectively as training and validation set_
-
-  
+<p align = "center">
+<img height="300" src="https://upload.wikimedia.org/wikipedia/commons/c/c7/LOOCV.gif">
+</p>
+<p align = "center">
+Example of Cross Validation (k=8) where the red and blue square is used respectively as training and validation set
+</p>
 
 The special case where $k$ is equal to $m$, the number of examples, is called _leave-one-out_. This procedures gives a very good estimate of the true error but, on the other side, it computationally expensive.
 
 A combination of holdout and cross validation can be used when also dealing with a validation set (_k-fold cross validation_). So after having divided the dataset in a stratify way into training and test set, the training part is again splitted into training and validation set (even in this case with `stratify=True`).
 
-### 4.2 Evaluation metrics[](#4.2-Evaluation-metrics)
+### Evaluation metrics
 
 In a classification scenario, the model can be evaluated by computing different metrics. In order to better understand these metrics could be useful to get some fundamentals:
 
@@ -586,21 +576,13 @@ In a classification scenario, the model can be evaluated by computing different 
 
 Some of the most popular metrics are:
 
-* **_Accuracy_**: ratio of correct predictions over the total number of data points classified
+* **_Accuracy_**: ratio of correct predictions over the total number of data points classified <br>$Accuracy = \frac{\#\ correctly\ classified\ samples}{total\ number\ of\ samples\ tested}=\frac{TP+TN}{TP+FP+TN+FN}$
 
-\\begin{equation} Accuracy = \\frac{\\#\ correctly\ classified\ samples}{total\ number\ of\ samples\ tested}=\\frac{TP+TN}{TP+FP+TN+FN} \\end{equation}
+* **_Precision_**: measures the fraction of correct classified instances among the ones classified as positive. Precision is an appropriate measure to use when the aim is to minimize _false positives_. <br>$Precision(c) = \frac{\#\ samples\ correctly\ assigned\ to\ class\ c}{\#\ of\ samples\ assigned\ to\ class\ c}=\frac{TP}{TP+FP}$
 
-* **_Precision_**: measures the fraction of correct classified instances among the ones classified as positive. Precision is an appropriate measure to use when the aim is to minimize _false positives_.
+* **_Recall_**: it measures how many of the actual positives a model capture through labelling it as True Positive. It is an appropriate score when the aim is to minimize false negatives <br>$Recall(c) = \frac{\#\ samples\ correctly\ assigned\ to\ class\ c}{\#\ of\ samples\ actually\ belonging\ to\ c}=\frac{TP}{TP+FN}$
 
-\\begin{equation} Precision(c) = \\frac{\\#\ samples\ correctly\ assigned\ to\ class\ c}{\\#\ of\ samples\ assigned\ to\ class\ c}=\\frac{TP}{TP+FP} \\end{equation}
-
-* **_Recall_**: it measures how many of the actual positives a model capture through labelling it as True Positive.It is an appropriate score when the aim is to minimize false negatives
-
-\\begin{equation} Recall(c) = \\frac{\\#\ samples\ correctly\ assigned\ to\ class\ c}{\\#\ of\ samples\ actually\ belonging\ to\ c}=\\frac{TP}{TP+FN} \\end{equation}
-
-* **_F1-score_**: is the harmonic mean of the precision and recall.
-
-\\begin{equation} F1 score(c) = \\frac{2\*precision( c) \*recall( c)}{precision( c) +recall( c)} \\end{equation}
+* **_F1-score_**: is the harmonic mean of the precision and recall. <br>$F1-score(c) = \frac{2\cdot precision(c)\cdot recall(c)}{precision(c) +recall( c)}$
 
   
 
@@ -608,138 +590,136 @@ The last three measures are _class-specific_, and a global metric can be obtaine
 
 In this analysis we focus our attention in detecting which customer may be defaults clients, and the positive class captures the attention of the classifier. As already mentioned, in the following section the F1-score will be used to find the best configuration for each model.
 
-4.3 Models[](#4.3-Models)
---------------------------
+---
+## Models
 
-### 4.3.1 Logistic Regression[¶](#4.3.1-Logistic-Regression)
+### Logistic Regression
 
 Logistic Regression is a parametric, discriminative binary classification algorithm. The name is given after the fact that the algorithm can be interpreted as part of the _Generalized Linear Model_, where the response variables are distributed according to a Bernoulli distribution. In particular, the model assumes the predictors to be linked to the mean of the response variables ($p_i$) as:
 
-\\begin{array}{l} observation\ ( x_{i} ,\ y_{i}) \ ,\ y_{i} \ realization\ of\ Y_{i} \\sim Bernoulli( p_{i}( x_{i}))\\\ \\\ log\\left(\\frac{p_{i}}{1-p_{i}}\\right) =w^{T} x_{i} \ \\Longleftrightarrow \ p_{i} =\\frac{1}{1+e^{-w^{T} x_{i}}} \ ,\ for\ all\ i \\end{array}
+$ observation\ ( x_{i} , y_{i}) \ ,\ y_{i} \ realization\ of\ Y_{i} \sim Bernoulli( p_{i}( x_{i}))\\\ \\\ log\left(\frac{p_{i}}{1-p_{i}}\right) =w^{T} x_{i} \ \Longleftrightarrow \ p_{i} =\frac{1}{1+e^{-w^{T} x_{i}}} \ ,\ for\ all\ i $
 
-  
-![](https://upload.wikimedia.org/wikipedia/commons/5/53/Sigmoid-function-2.svg)  
-
-_Logits function_
-
-  
+<p align = "center">
+<img height="300" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Sigmoid-function-2.svg">
+</p>
+<p align = "center">
+Logits function
+</p>
 
 The algorithm then tries to find the MLE (or MAP if a regularization term is added) of the mean of the response variables, by acting on _w_, assuming i.i.d. samples. Unlike ordinary least squares the optimization problem does not have a closed-form solution, but it’s instead solved through numerical methods.
 
 \\begin{equation} \\underset{w}{\\max} \ \\prod ^{n}_{i} \ p_{i}( x_{i} |w)^{y_{i}} \ *\ ( 1-p_{i}( x_{i} |w))^{1-y_{i}} \\end{equation}
 
 A **_regularization term_** is often added to prevent the coefficients to reach a too high value which would overfit the training data. The hyperparameter $C$ is applied on the new penalty term and inversely regulates the strength of the regularization in the objective function.
-
-\# C values tuned:
-params = {'C': \[0.0001, 0.001, 0.01, 0.1, 1, 10\]}
+```python
+# C values tuned:
+params = {'C': [0.0001, 0.001, 0.01, 0.1, 1, 10]}
 
 #Best configuration found C=0.01
 #Data prepocessing: PCA+SMOTE
+```
 
-![](https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/logisticregression_compare_score.png?raw=true)
-
-_Tuning of hyperparameter C on the training set both with SMOTE (left) and Cluster Centroids (right)  
-algorithms. Note that scores reported refers to the positive class._
-
-  
+<p align = "center">
+<img height="300" src="https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/logisticregression_compare_score.png?raw=true">
+</p>
+<p align = "center">
+Tuning of hyperparameter C on the training set both with SMOTE (left) and Cluster Centroids (right)  
+algorithms. Note that scores reported refers to the positive class.</p>
 
 As a result, the output of a Logistic Regression model is the probability of the input sample to be of class 1, hence a confidence measure is also returned when predictions are performed. On top of this, the coefficients returned by the algorithm may give interpretable insights on what attributes are contributing the most to a higher output value, and viceversa.
 
-  
-![](https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/logisticregression_coefficents.png?raw=true)  
+<p align = "center">
+<img height="300" src="https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/logisticregression_coefficents.png?raw=true">
+</p>
+<p align = "center">
+Coefficients found by Logistic Regression. The PC5 feature empirically  
+gives the highest contribute towards being predicted as defaulters</p>
 
-_Coefficients found by Logistic Regression. The PC5 feature empirically  
-gives the highest contribute towards being predicted as defaulters_
+### Decision Tree
 
-  
-
-### 4.3.2 Decision Tree[](#4.3.2-Decision-Tree)
-
-Decision Trees are the most intuitive and interpretable machine learning model, which predict the target label by learning simple decision rules inferred from the data. At each step, a Decision Tree picks the feature that best divides the space into different labels, by means of the GINI impurity measure: \\begin{equation} GINI( t) =\\sum ^{C}_{i=1} p_{t}( k)( 1-p_{t}( k)) =1-\\sum ^{C}_{i=1} p_{t}( k)^{2} \\end{equation}
+Decision Trees are the most intuitive and interpretable machine learning model, which predict the target label by learning simple decision rules inferred from the data. At each step, a Decision Tree picks the feature that best divides the space into different labels, by means of the GINI impurity measure: <br><br>$ GINI( t) =\sum ^{C}_{i=1} p_{t}( k)( 1-p_{t}( k)) =1-\sum ^{C}_{i=1} p_{t}( k)^{2} $
 
 where $p_{t}(k)$ is the frequency of class $k$ appearing in node $t$, with $C$ the total number of classes. The lower the measure, the less impure the node is.
 
 A full tree is then constructed on the training data and will be used at classification time for predicting the target label. To avoid overfitting, decision trees are often pruned before reaching their full growth, and predictions are made according to a majority vote on the samples of each leaf. Note how trees cannot handle missing values, but do not suffer from feature scaling since each attribute is treated independently.
-
-#Best configuration found 
-#Data prepocessing: PCA+SMOTE
+```python
+# Best configuration found 
+# Data prepocessing: PCA+SMOTE
 params = {'criterion': 'gini', 'max_depth': 5, 'min\_impurity\_decrease': 0.0, 'splitter': 'best'}
-
+```
 Decision trees are however considered weak learners in the majority of cases, and ensemble techniques such as _bagging_ (Random forests) or _boosting_ are in practice applied on them in order to reach higher performances and more robust solutions.
 
-### 4.3.3 Random Forest[](#4.3.3-Random-Forest)
+### Random Forest
 
 Random Forests are an ensemble method made out of multiple decision trees. Each individual tree in the random forest makes a class prediction and the class with the most votes is assigned to the sample taken into account. The intuition behind this method is that a large number of relatively **uncorrelated** models (trees) operating as a committee will outperform any of the individual constituent model. Uncorrelation is the key of Random Forests better performances, and this is ensured through two methods:
 
 1.  Bagging (boostrap aggregation) to promote variance between each internal model, each individual tree is trained on a sample of the same size of the training dataset randomly chosen with replacement;
-2.  In addition, trees are further decorrelated by choosing only a subset of features at each split of each tree (usually $\\sqrt{\\#features}$).
+2.  In addition, trees are further decorrelated by choosing only a subset of features at each split of each tree (usually $\sqrt{\#features}$).
 
 Overall, each tree is then trained on a sample of the same size of the training dataset chosen with replacement, and their splits consider different features every time. This way, even if the decision trees are somewhat overfitting the data and are unstable (high variance), the overall prediction will be statistically more robust (low variance) because of Central Limit Theorem. The prediction is indeed performed by picking the majority class out of all trees.
 
 Hyperparameter tuning on the number of trees and pruning factors for each tree has been performed. In particular, note how the predictions tend to be better as the ensemble model grows horizontally in size:
 
-  
-![](https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/randomforest_compare_score.png?raw=true)  
-
-_Tuning of hyperparameter n_estimator is reported both for SMOTE (left) and Cluster Centroids (right) algorithms._
-
-  
+<p align = "center">
+<img height="300" src="https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/randomforest_compare_score.png?raw=true">
+</p>
+<p align = "center">
+Tuning of hyperparameter n_estimator is reported both for SMOTE (left) and Cluster Centroids (right) algorithms.</p>
 
 * The choice of the imbalancing technique affect the performance of the Random forest. Indeed, the oversampling technique is preferable.
 * Also, the hyperparameter that regulates the number of estimators seems to be irrelevant over the performance of the algorithms.
-
-#Best configuration found 
-#Data prepocessing: PCA+SMOTE
+```python
+# Best configuration found 
+# Data prepocessing: PCA+SMOTE
 params = {'criterion': 'gini', 'max_features': 'sqrt', 'n_estimators': 100}
-
+```
 Finally, tree-based model can be used as an alternative method for feature selection. They indeed provide a feature importance measure by means of how much the gini index has been affected on the various splits with the given feature. Compared to decision tree, random forests guarantee robustness and are less prone to overfitting.  
-  
-![](https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/randomforest-feature_importance.png?raw=true)  
 
-_Feature importance computed by the random forest on each of the attributes._
+<p align = "center">
+<img height="300" src="https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/randomforest-feature_importance.png?raw=true">
+</p>
+<p align = "center">
+Feature importance computed by the random forest on each of the attributes</p>
 
-  
-
-### 4.3.4 SVM[](#4.3.4-SVM)
+### SVM
 
 Support vector machine (SVM) is a parametric linear classification algorithm that aims at separating two classes through a hyperplane in the data dimension. Once the hyperplane has been set, the prediction rule is simply based on whether the test point lays on one side or the other one of it. If more than one hyperplanes fit the purpose, the one with the higher margin (distance) between support vector (the closest points to the hyperplane, one for each class) is selected.
 
-  
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/SVM_margin.png/800px-SVM_margin.png)  
+<p align = "center">
+<img height="300" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/SVM_margin.png/800px-SVM_margin.png">
+</p>
+<p align = "center">
+Maximum-margin hyperplane and margins for an SVM trained with samples from two classes.  
+Samples on the margin are called the support vectors.</p>
 
-_Maximum-margin hyperplane and margins for an SVM trained with samples from two classes.  
-Samples on the margin are called the support vectors._
+More formally, it tries to define $\vec{w} ,b$ s.t. the hyperplane $w^{T}x+b=0$ is the “maximum-margin hyperplane”, i.e. such that the distance between the hyperplane and the nearest point $\overrightarrow{x_{i}}$ from either group is maximized. If we impose that all points must satisfy $|w^{T}x+b|\\geqslant1$ relatively to their label, then the optimization problem becomes equivalent to finding the smallest $\|w\|$:
 
-  
+#### Primal Optimization Problem (Hard Margin) 
 
-More formally, it tries to define $\\vec{w} ,b$ s.t. the hyperplane $w^{T}x+b=0$ is the “maximum-margin hyperplane”, i.e. such that the distance between the hyperplane and the nearest point $\\overrightarrow{x_{i}}$ from either group is maximized. If we impose that all points must satisfy $|w^{T}x+b|\\geqslant1$ relatively to their label, then the optimization problem becomes equivalent to finding the smallest $\\|w\\|$:
+$ \underset{w,b}{min} \tfrac{1}{2}\Vert w\Vert ^{2} \\ \\\ s.t.\ y_{i}\left( w^{T} x_{i} +b\right) \geqslant 1,\ \forall i $
 
-#### Primal Optimization Problem (Hard Margin)[¶](#Primal-Optimization-Problem-(Hard-Margin))
-
-\\begin{array}{l} \\underset{w,b}{min} \ \\tfrac{1}{2}\\Vert w\\Vert ^{2} \ \\\ \\\ s.t.\ y_{i}\\left( w^{T} x_{i} +b\\right) \\geqslant 1,\ \\forall i \\end{array}
-
-The decision function on a binary label $\\{-1,1\\}$ is then applied as $x\\mapsto sign\\left( w^{T} x+b\\right)$. Geometrically, the best hyperplane is completely determined by the points $\\overrightarrow{x_{i}}$ the lie right on the boundary of the margin $|w^{T}x_{i}+b|=1$. These points are called **_support vectors_**.
+The decision function on a binary label $\{-1,1\}$ is then applied as $x\mapsto sign\left( w^{T} x+b\right)$. Geometrically, the best hyperplane is completely determined by the points $\overrightarrow{x_{i}}$ the lie right on the boundary of the margin $|w^{T}x_{i}+b|=1$. These points are called **_support vectors_**.
 
 This model is referred to as **Hard-margin SVM**, where data is supposed to be linearly separable otherwise no feasible solution would be found.  
 
 To extend the model on classes that are not perfectly separable by means of a hyperplane, the hinge loss function is introduced, which penalizes points falling in between the margin:
 
-\\begin{equation} L_{hinge} :=\ \\max\\left( 0,\ 1-y_{i}\\left( w^{T} x_{i} +b\\right)\\right) \\end{equation}
+$ L_{hinge} := \max\left( 0, 1-y_{i}\left( w^{T} x_{i} +b\right)\right) $
 
 The previous opt. problem is then generalized to the **soft margin** version, which is equivalent to the ERM of the hinge loss with an L2 regularization term:
 
-#### Primal Optimization Problem (Soft Margin)[¶](#Primal-Optimization-Problem-(Soft-Margin))
+#### Primal Optimization Problem (Soft Margin)
 
-\\begin{array}{l} \\underset{w,b,\\xi }{min} \ \ \\tfrac{1}{2}\\Vert w\\Vert ^{2} \ +C\\sum ^{n}_{i} \\xi _{i}\\\ \\\ s.t.:\\\ y_{i}\\left( w^{T} x_{i} +b\\right) \\geqslant 1-\\xi _{i} \ ,\ \\forall i\\\ \\xi _{i} \\geqslant 0\ ,\ \\forall i\\\ \\end{array}
+$ \\underset{w,b,\xi }{min} \ \ \\tfrac{1}{2}\\Vert w\\Vert ^{2} \ +C\\sum ^{n}_{i} \\xi _{i}\\\ \\\ s.t.:\\\ y_{i}\\left( w^{T} x_{i} +b\\right) \\geqslant 1-\\xi _{i} \ ,\ \\forall i\\\ \\xi _{i} \\geqslant 0\ ,\ \\forall i\\\ $
 
-Where $𝝃$ is a slack variable which is introduced to in order to soften the misclassification constraint, allowing the model to make a certain number of mistakes and letting the margin to remain as wide as possible. The amount of misclassification allowed is controlled by the hyperparameter $C$ which regulates the strength of the Hinge Loss term introduced: a higher $C$ will lead to a stronger minimization of the hinge loss (forcing training points to be more correctly classified), while a lower $C$ imposes a harder regularization (allowing more missclassifications) leading to a larger margin.  
+Where $\xi$ is a slack variable which is introduced to in order to soften the misclassification constraint, allowing the model to make a certain number of mistakes and letting the margin to remain as wide as possible. The amount of misclassification allowed is controlled by the hyperparameter $C$ which regulates the strength of the Hinge Loss term introduced: a higher $C$ will lead to a stronger minimization of the hinge loss (forcing training points to be more correctly classified), while a lower $C$ imposes a harder regularization (allowing more missclassifications) leading to a larger margin.  
 The Lagrangian Dual Problem is as follows:
 
-#### Dual Optimization Problem (Soft Margin)[¶](#Dual-Optimization-Problem-(Soft-Margin))
+**Dual Optimization Problem (Soft Margin)**
 
-\\begin{array}{l} \\underset{\\alpha }{max} \ \ \\sum ^{n}_{i} \\alpha _{i} -\\tfrac{1}{2}\\sum _{i,j} \\alpha _{i} \\alpha _{j} y_{i} y_{j}\\left( x^{T}_{i} x_{j}\\right)\\\ \\\ s.t.\ \\\ \\sum \\alpha _{i} y_{i} =0\ \ \\land \ 0\\leqslant \\alpha _{i} \\leqslant C,\ \\forall i \\end{array}
+$ \underset{\alpha }{max} \ \ \sum ^{n}_{i} \alpha _{i} -\tfrac{1}{2}\sum _{i,j} \alpha _{i} \alpha _{j} y_{i} y_{j}\left( x^{T}_{i} x_{j}\right)\\\ \\\ s.t.: \\ \sum \alpha _{i} y_{i} =0\ \ \land \ 0\leqslant \alpha _{i} \leqslant C,\ \forall i $
 
-By solving the dual problem (e.g. through Quadratic Programming) we find $w=\\sum ^{n}_{i} \\alpha _{i} y_{i} x_{i}$ as a linear combination of the training data. In particular, only the points that are in between (or exactly on) the margin will have an $\\alpha_{i}\\neq0$, i.e. only the so called support vectors are affecting the decision function. The latter can be then also denoted as $sign\\left(\\sum \\alpha _{i} y_{i}\\left( x^{T}_{i} x\\right)+b\\right)$, with $x$ a generic test observation. Note how in the soft margin version the number of support vectors found is generally much higher.
+By solving the dual problem (e.g. through Quadratic Programming) we find $w=\sum^{n}_{i} \alpha_{i} y_{i} x_{i}$ as a linear combination of the training data. In particular, only the points that are in between (or exactly on) the margin will have an $\\alpha_{i}\\neq0$, i.e. only the so called support vectors are affecting the decision function. The latter can be then also denoted as $sign\\left(\\sum \\alpha _{i} y_{i}\\left( x^{T}_{i} x\\right)+b\\right)$, with $x$ a generic test observation. Note how in the soft margin version the number of support vectors found is generally much higher.
 
 Starting from these assumptions, the SVM model can still be generalized to multiclass classification and **non-linearly separable classes**. Indeed, as for the second case, classes may follow a non-linear pattern and a hyperplane may not be the best fit for explaining our data. However, the given dataset might still be linearly separable when mapped onto a higher-dimensional space by a non-linear function phi, such that the training points are transformed as $x_{i} \\in \\mathbb{R}^{d} \\mapsto \\varphi ( x_{i}) \\in \\mathbb{R}^{d^{\\prime}} ,\ d^{\\prime}>d$.
 
@@ -747,7 +727,7 @@ While it is possible to compute the SVM algorithm in a higher space through a fe
 
 We then introduce the notion of a Kernel function $K$, defined as:
 
-\\begin{equation} K\ :\ \\mathcal{X} \\times \\mathcal{X}\\rightarrow \ \\mathbb{R}\\\ ( x,\ x^{\\prime} ) \\mapsto K( x,\ x^{\\prime} ):=\\varphi ( x)^{T} \\varphi ( x^{\\prime} ) \\end{equation}
+$$ K\ :\ \\mathcal{X} \\times \\mathcal{X}\\rightarrow \ \\mathbb{R}\\\ ( x,\ x^{\\prime} ) \\mapsto K( x,\ x^{\\prime} ):=\\varphi ( x)^{T} \\varphi ( x^{\\prime} ) $$
 
 for some feature map $\\phi$. Then, we can simply apply different kernel functions to the SVM algorithm without directly knowing what the feature transformation is. The power of this approach relies on the Mercer’s Theorem, which gives a sufficient condition for a function to be a Kernel for some unknown $\\varphi ( \\cdot )$.
 
@@ -763,11 +743,13 @@ The decision function then becomes $sign\\left(\\sum \\alpha _{i} y_{i}K(x_{i},x
 
 In this study, both the linear and the gaussian RBF Kernels have been tried. The regularization parameter $C$ has been hypertuned to find the best performing model on the training set.
 
+```python
 #Best configuration found 
 #polynomial kernel
 params = {'C': 100, 'kernel': 'poly'}
 #kernel RBF
 params = {'C': 1, 'kernel': 'rbf'}
+```
 
 |     | Precision | Recall | F1-score |
 | --- | --- | --- | --- |
@@ -780,22 +762,20 @@ params = {'C': 1, 'kernel': 'rbf'}
 
 _Scores on validation for the best configuration found with both kernels and both preprocessing techniques_
 
-  
-
 * the score obtained are quite similar indipendently from the preprocessing technique (SMOTE is a little bit better);
 * with a polinomial kernel in general the recall on positive class is lower than all the other cases;
 * the gaussian version of the SVM outperforms the polinomial one.
 
 In conclusion, also in this case the results should be improved in order to get more accurate prediction on default credit card clients.
 
-5\. Results[](#5.-Results)
----------------------------
+---
+## Results
 
 The following barplot displays a summary of results in the training-validation phase where all the algorithms are trained with their best hyperparameters (i.e. the ones that maximize the f1-score on positive class), with both techniques presented to overcome class imbalancing problem. ![](https://github.com/robertofranceschi/default-credit-card-prediction/blob/master/images/final_comparison_f1score.png?raw=true)
 
 _Comparison of F1-score with different algorithms_
 
-#### Comments[](#Comments)
+### Discussion
 
 * Logistic Regression and Support Vector Machines maintain the same performance regardless the imbalancing techniques used, while this is not true for Random Forest, the reason might be that a decision tree to perform well needs lot of data but at the same time undersampling technique reduce the amount of data.
 * Overall, oversampling slightly outperforms undersampling;
@@ -825,12 +805,13 @@ OS: Oversampling (SMOTE), US: Undersampling (Cluster Centroids)_
 
 _Note that the scores obtained on the test should never be treated as additional information to change how the training is performed, but only as a final evaluation of the model._
 
-6\. Conclusions[](#6.-Conclusions)
------------------------------------
+---
+
+## Conclusions
 
 In this study different supervised learning algorithms have been inspected and presented with their mathematical details, and finally used on the UCI dataset to build a classification model that is able to predict if a credit card clients will default in the next month. Data preprocessing makes algorithms perform slightly better than when trained with original data: in particular, PCA results are approximately the same, but the computational cost has been lowered. Oversampling and undersampling techniques has been combined with PCA to assess the dataset imbalance problem. Oversampling as mentioned performed slightly better w.r.t. the undersampling, this is likely because the model is trained on a large amount of data. However, all the models implemented achieved comparable results in terms of accuracy.
 
-### References[¶](#References)
+### References
 
 \[1\] Default of credit card clients Data Set: UCI dataset [link](https://archive.ics.uci.edu/ml/datasets/default+of+credit+card+clients)  
   
